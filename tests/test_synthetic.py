@@ -22,7 +22,14 @@ class SyntheticTests(unittest.TestCase):
         for path in sorted((ROOT / "data").glob("*.json")):
             p = json.loads(path.read_text())
             self.assertEqual(p["provenance"]["kind"], "synthetic")
-            self.assertEqual(p, generate(p["n_assets"], p["K"], p["provenance"]["seed"]))
+            regenerated = generate(p["n_assets"], p["K"], p["provenance"]["seed"])
+            # BLAS implementations can differ at the last floating-point bit.
+            for field in ("mu", "Sigma"):
+                np.testing.assert_allclose(p[field], regenerated[field], rtol=1e-13, atol=1e-15)
+            for field in ("name", "n_assets", "K", "lambda", "A", "provenance"):
+                self.assertEqual(p[field], regenerated[field])
+            self.assertEqual(p["known_optimum"]["x"], regenerated["known_optimum"]["x"])
+            self.assertAlmostEqual(p["known_optimum"]["energy"], regenerated["known_optimum"]["energy"], places=13)
             self.assertGreater(np.linalg.eigvalsh(p["Sigma"]).min(), 0)
             coeffs = qubo_to_ising_coeffs(p["mu"], p["Sigma"], p["lambda"], p["A"], p["K"])
             energies = []
