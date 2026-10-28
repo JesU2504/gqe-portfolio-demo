@@ -2,8 +2,16 @@
 
 A Python research implementation that uses a Generative Quantum Eigensolver
 (GQE) to search for circuits selecting a fixed number of assets. It connects a
-classical return–risk objective to CUDA-Q circuit simulation and a transformer
-solver, with exact-search baselines and checks on the measured portfolios.
+classical return–risk objective to CUDA-Q circuit simulation and a **GPT-style
+transformer**, with exact-search baselines and checks on the measured portfolios.
+
+The GPT model generates candidate quantum circuits: quantum operators act as
+tokens, and generated token sequences define circuits. CUDA-Q evaluates those
+circuits against the portfolio objective, providing cost feedback for training.
+This project integrates the GPT-based GQE implementation in NVIDIA CUDA-Q
+Solvers with portfolio modelling, validation, and reproducible result outputs.
+See the [NVIDIA GQE API documentation](https://nvidia.github.io/cudaqx/0.6.0/api/solvers/python_api.html)
+for the transformer configuration and upstream model implementation.
 
 **This public release contains synthetic examples only.** The three generated
 instances, their exact optima, and their seeds are included. Collaborator inputs,
